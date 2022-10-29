@@ -1,14 +1,10 @@
 package server;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
+import handler.Handler;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -37,6 +33,10 @@ public class Server {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void addHandler(String request, String msg, Handler handler) {
+        //код
     }
 }
 

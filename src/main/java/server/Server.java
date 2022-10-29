@@ -17,7 +17,7 @@ import java.util.concurrent.Executors;
 public class Server {
     public static final int PORT = 9999;
     private final ServerSocket serverSocket;
-    final List<String> validPaths = List.of("/index.html", "/spring.svg",
+    public static List<String> validPaths = List.of("/index.html", "/spring.svg",
             "/spring.png", "/resources.html", "/styles.css", "/app.js",
             "/links.html", "/forms.html", "/classic.html", "/events.html", "/events.js");
     private final ExecutorService executorService = Executors.newFixedThreadPool(64);
@@ -30,65 +30,9 @@ public class Server {
         System.out.println("Запускаем сервер на порту " + PORT);
         System.out.printf("Открой в браузере http://localhost:%d/\n", PORT);
         while (true) {
-            try (Socket socket = serverSocket.accept();
-                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                 BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream())) {
-                // read only request line for simplicity
-                // must be in form GET /path HTTP/1.1
-                System.out.println("Есть подключение");
+            try {
+                Socket socket = serverSocket.accept();
                 executorService.execute(new MonoThreadClientHandler(socket));
-                String requestLine = in.readLine();
-                String[] parts = requestLine.split(" ");
-
-                if (parts.length != 3) {
-                    // just close socket
-                    continue;
-                }
-
-                String path = parts[1];
-                if (!validPaths.contains(path)) {
-                    out.write((
-                            "HTTP/1.1 404 Not Found\r\n" +
-                                    "Content-Length: 0\r\n" +
-                                    "Connection: close\r\n" +
-                                    "\r\n"
-                    ).getBytes());
-                    out.flush();
-                    continue;
-                }
-
-                Path filePath = Path.of(".", "public", path);
-                String mimeType = Files.probeContentType(filePath);
-
-                // special case for classic
-                if (path.equals("/classic.html")) {
-                    String template = Files.readString(filePath);
-                    byte[] content = template.replace(
-                            "{time}",
-                            LocalDateTime.now().toString()
-                    ).getBytes();
-                    out.write((
-                            "HTTP/1.1 200 OK\r\n" +
-                                    "Content-Type: " + mimeType + "\r\n" +
-                                    "Content-Length: " + content.length + "\r\n" +
-                                    "Connection: close\r\n" +
-                                    "\r\n"
-                    ).getBytes());
-                    out.write(content);
-                    out.flush();
-                    continue;
-                }
-
-                long length = Files.size(filePath);
-                out.write((
-                        "HTTP/1.1 200 OK\r\n" +
-                                "Content-Type: " + mimeType + "\r\n" +
-                                "Content-Length: " + length + "\r\n" +
-                                "Connection: close\r\n" +
-                                "\r\n"
-                ).getBytes());
-                Files.copy(filePath, out);
-                out.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }

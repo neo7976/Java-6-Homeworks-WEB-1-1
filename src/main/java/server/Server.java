@@ -20,10 +20,11 @@ public class Server {
     public static List<String> validPaths = List.of("/index.html", "/spring.svg",
             "/spring.png", "/resources.html", "/styles.css", "/app.js",
             "/links.html", "/forms.html", "/classic.html", "/events.html", "/events.js");
-    private final ExecutorService executorService = Executors.newFixedThreadPool(64);
+    private ExecutorService executorService;
 
     public Server() throws IOException {
         serverSocket = new ServerSocket(PORT);
+        executorService = Executors.newFixedThreadPool(64);
         handlers = new ConcurrentHashMap<>();
     }
 
@@ -36,9 +37,10 @@ public class Server {
                 executorService.execute(new MonoThreadClientHandler(socket, handlers));
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                executorService.shutdown();
             }
+//            } finally {
+//                executorService.shutdown();
+//            }
         }
     }
 

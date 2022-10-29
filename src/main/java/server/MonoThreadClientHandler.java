@@ -34,6 +34,7 @@ public class MonoThreadClientHandler implements Runnable {
 
                 if (parts.length != 3) {
                     // just close socket
+                    socket.close();
                     continue;
                 }
 
@@ -98,7 +99,7 @@ public class MonoThreadClientHandler implements Runnable {
 
     private void responseLack(BufferedOutputStream out, String responseCode, String responseMsg) throws IOException {
         out.write((
-                "HTTP/1.1" + responseCode + " " + responseMsg + "\r\n" +
+                "HTTP/1.1 " + responseCode + " " + responseMsg + "\r\n" +
                         "Content-Length: 0\r\n" +
                         "Connection: close\r\n" +
                         "\r\n"

@@ -45,42 +45,51 @@ public class MonoThreadClientHandler implements Runnable {
                     continue;
                 }
 
-                if (!Server.validPaths.contains(path)) {
-                    responseLack(out, "404", "Not Found");
-                    continue;
-                }
-                Path filePath = Path.of(".", "public", path);
-                String mimeType = Files.probeContentType(filePath);
+                Map<String, Handler> handlerMap = handlers.get(request.getMethod());
+                String requestPath = request.getPath();
+                if (handlerMap.containsKey(requestPath)) {
+                    Handler handler = handlerMap.get(requestPath);
+                    handler.handle(request, out);
+                } else {
+                    if (!Server.validPaths.contains(requestPath)) {
+                        responseLack(out, "404", "Not Found");
+                        continue;
+                    } else {
+                        Path filePath = Path.of(".", "public", path);
+                        String mimeType = Files.probeContentType(filePath);
 
-                // special case for classic
-                if (path.equals("/classic.html")) {
-                    String template = Files.readString(filePath);
-                    byte[] content = template.replace(
-                            "{time}",
-                            LocalDateTime.now().toString()
-                    ).getBytes();
-                    out.write((
-                            "HTTP/1.1 200 OK\r\n" +
-                                    "Content-Type: " + mimeType + "\r\n" +
-                                    "Content-Length: " + content.length + "\r\n" +
-                                    "Connection: close\r\n" +
-                                    "\r\n"
-                    ).getBytes());
-                    out.write(content);
-                    out.flush();
-                    continue;
+                        // special case for classic
+                        if (path.equals("/classic.html")) {
+                            String template = Files.readString(filePath);
+                            byte[] content = template.replace(
+                                    "{time}",
+                                    LocalDateTime.now().toString()
+                            ).getBytes();
+                            out.write((
+                                    "HTTP/1.1 200 OK\r\n" +
+                                            "Content-Type: " + mimeType + "\r\n" +
+                                            "Content-Length: " + content.length + "\r\n" +
+                                            "Connection: close\r\n" +
+                                            "\r\n"
+                            ).getBytes());
+                            out.write(content);
+                            out.flush();
+                            continue;
+                        }
+
+                        long length = Files.size(filePath);
+                        out.write((
+                                "HTTP/1.1 200 OK\r\n" +
+                                        "Content-Type: " + mimeType + "\r\n" +
+                                        "Content-Length: " + length + "\r\n" +
+                                        "Connection: close\r\n" +
+                                        "\r\n"
+                        ).getBytes());
+                        Files.copy(filePath, out);
+                        out.flush();
+                    }
                 }
 
-                long length = Files.size(filePath);
-                out.write((
-                        "HTTP/1.1 200 OK\r\n" +
-                                "Content-Type: " + mimeType + "\r\n" +
-                                "Content-Length: " + length + "\r\n" +
-                                "Connection: close\r\n" +
-                                "\r\n"
-                ).getBytes());
-                Files.copy(filePath, out);
-                out.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -1,5 +1,6 @@
 package server;
 
+import handler.Handler;
 import request.Request;
 
 import java.io.BufferedOutputStream;
@@ -10,12 +11,16 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class MonoThreadClientHandler implements Runnable {
-    private final Socket socket;
+    private Socket socket;
+    private ConcurrentHashMap<String, Map<String, Handler>> handlers;
 
-    public MonoThreadClientHandler(Socket socket) {
+    public MonoThreadClientHandler(Socket socket, ConcurrentHashMap<String, Map<String, Handler>> handlers) {
         this.socket = socket;
+        this.handlers = handlers;
     }
 
     @Override
@@ -35,14 +40,13 @@ public class MonoThreadClientHandler implements Runnable {
                 String method = parts[0];
                 String path = parts[1];
                 Request request = new Request(method, path);
+                if (request.getMethod() == null || handlers.contains(request.getMethod())) {
+                    responseLack(out, "404", "Request Not Found");
+                    continue;
+                }
+
                 if (!Server.validPaths.contains(path)) {
-                    out.write((
-                            "HTTP/1.1 404 Not Found\r\n" +
-                                    "Content-Length: 0\r\n" +
-                                    "Connection: close\r\n" +
-                                    "\r\n"
-                    ).getBytes());
-                    out.flush();
+                    responseLack(out, "404", "Not Found");
                     continue;
                 }
                 Path filePath = Path.of(".", "public", path);
@@ -81,5 +85,15 @@ public class MonoThreadClientHandler implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void responseLack(BufferedOutputStream out, String responseCode, String responseMsg) throws IOException {
+        out.write((
+                "HTTP/1.1" + responseCode + " " + responseMsg + "\r\n" +
+                        "Content-Length: 0\r\n" +
+                        "Connection: close\r\n" +
+                        "\r\n"
+        ).getBytes());
+        out.flush();
     }
 }

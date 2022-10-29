@@ -42,10 +42,10 @@ public class Server {
         }
     }
 
-    public void addHandler(String request, String msg, Handler handler) {
+    public void addHandler(String method, String msg, Handler handler) {
         //код
-        if (handlers.containsKey(request))
-            handlers.put(request, new HashMap<>());
+        if (!handlers.containsKey(method))
+            handlers.put(method, new HashMap<>());
         handlers.get(msg).put(msg, handler);
     }
 }

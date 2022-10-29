@@ -5,7 +5,7 @@ public class Request {
     private String path;
 
     public Request(String method, String path) {
-        this.method = method;
+        this.method = setMethod(method);
         this.path = path;
     }
 
@@ -15,5 +15,11 @@ public class Request {
 
     public String getPath() {
         return path;
+    }
+
+    public String setMethod(String method) {
+        if (method != null && method.isBlank())
+            return method;
+        return null;
     }
 }

@@ -1,5 +1,7 @@
 package server;
 
+import request.Request;
+
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,7 +32,9 @@ public class MonoThreadClientHandler implements Runnable {
                     continue;
                 }
 
+                String method = parts[0];
                 String path = parts[1];
+                Request request = new Request(method, path);
                 if (!Server.validPaths.contains(path)) {
                     out.write((
                             "HTTP/1.1 404 Not Found\r\n" +

@@ -7,6 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -29,8 +30,9 @@ public class Server {
     }
 
     public void start() {
+        Random random = new Random();
         System.out.println("Запускаем сервер на порту " + PORT);
-        System.out.printf("Открой в браузере http://localhost:%d/\n", PORT);
+        System.out.printf("Открой в браузере http://localhost:%d%s\n", PORT, validPaths.get(random.nextInt(validPaths.size()-1)));
         while (true) {
             try {
                 Socket socket = serverSocket.accept();

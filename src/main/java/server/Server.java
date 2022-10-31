@@ -1,15 +1,10 @@
 package server;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -27,12 +22,14 @@ public class Server {
     }
 
     public void start() {
+        Random random = new Random();
         System.out.println("Запускаем сервер на порту " + PORT);
-        System.out.printf("Открой в браузере http://localhost:%d/\n", PORT);
+        System.out.printf("Открой в браузере http://localhost:%d%s\n", PORT, validPaths.get(random.nextInt(validPaths.size()-1)));
         while (true) {
             try {
                 Socket socket = serverSocket.accept();
                 executorService.execute(new MonoThreadClientHandler(socket));
+//                executorService.execute(() -> treatment(socket));
             } catch (IOException e) {
                 e.printStackTrace();
             }

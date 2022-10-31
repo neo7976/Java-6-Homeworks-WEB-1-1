@@ -18,7 +18,6 @@ public class MonoThreadClientHandler implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
             try {
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream());
@@ -27,7 +26,7 @@ public class MonoThreadClientHandler implements Runnable {
 
                 if (parts.length != 3) {
                     // just close socket
-                    continue;
+//                    continue;
                 }
 
                 String path = parts[1];
@@ -39,7 +38,7 @@ public class MonoThreadClientHandler implements Runnable {
                                     "\r\n"
                     ).getBytes());
                     out.flush();
-                    continue;
+//                    continue;
                 }
                 Path filePath = Path.of(".", "public", path);
                 String mimeType = Files.probeContentType(filePath);
@@ -60,7 +59,7 @@ public class MonoThreadClientHandler implements Runnable {
                     ).getBytes());
                     out.write(content);
                     out.flush();
-                    continue;
+//                    continue;
                 }
 
                 long length = Files.size(filePath);
@@ -78,4 +77,4 @@ public class MonoThreadClientHandler implements Runnable {
             }
         }
     }
-}
+

@@ -20,6 +20,11 @@ public class Main {
                 // TODO: handlers code
             }
         });
+
+        server.addHandler("GET", "/", ((request, responseStream) -> {
+//
+        }));
+
     }
 }
 

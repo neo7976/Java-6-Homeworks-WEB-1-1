@@ -37,9 +37,7 @@ public class MonoThreadClientHandler implements Runnable {
 //                    continue;
                 }
 
-                String method = parts[0];
-                String path = parts[1];
-                Request request = new Request(method, path);
+                Request request = new Request(parts[0], parts[1]);
                 if (request.getMethod() == null || handlers.contains(request.getMethod())) {
                     responseLack(out, "404", "Request Not Found");
 //                    continue;
@@ -55,11 +53,11 @@ public class MonoThreadClientHandler implements Runnable {
                         responseLack(out, "404", "Not Found");
 //                        continue;
                     } else {
-                        Path filePath = Path.of(".", "public", path);
+                        Path filePath = Path.of(".", "public", requestPath);
                         String mimeType = Files.probeContentType(filePath);
 
                         // special case for classic
-                        if (path.equals("/classic.html")) {
+                        if (requestPath.equals("/classic.html")) {
                             String template = Files.readString(filePath);
                             byte[] content = template.replace(
                                     "{time}",

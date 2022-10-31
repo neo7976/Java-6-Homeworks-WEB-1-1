@@ -25,7 +25,6 @@ public class MonoThreadClientHandler implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
             try {
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream());
@@ -35,7 +34,7 @@ public class MonoThreadClientHandler implements Runnable {
                 if (parts.length != 3) {
                     // just close socket
                     socket.close();
-                    continue;
+//                    continue;
                 }
 
                 String method = parts[0];
@@ -43,7 +42,7 @@ public class MonoThreadClientHandler implements Runnable {
                 Request request = new Request(method, path);
                 if (request.getMethod() == null || handlers.contains(request.getMethod())) {
                     responseLack(out, "404", "Request Not Found");
-                    continue;
+//                    continue;
                 }
 
                 Map<String, Handler> handlerMap = handlers.get(request.getMethod());
@@ -54,7 +53,7 @@ public class MonoThreadClientHandler implements Runnable {
                 } else {
                     if (!Server.validPaths.contains(requestPath)) {
                         responseLack(out, "404", "Not Found");
-                        continue;
+//                        continue;
                     } else {
                         Path filePath = Path.of(".", "public", path);
                         String mimeType = Files.probeContentType(filePath);
@@ -75,7 +74,7 @@ public class MonoThreadClientHandler implements Runnable {
                             ).getBytes());
                             out.write(content);
                             out.flush();
-                            continue;
+//                            continue;
                         }
 
                         long length = Files.size(filePath);
@@ -95,7 +94,7 @@ public class MonoThreadClientHandler implements Runnable {
                 e.printStackTrace();
             }
         }
-    }
+
 
     private void responseLack(BufferedOutputStream out, String responseCode, String responseMsg) throws IOException {
         out.write((

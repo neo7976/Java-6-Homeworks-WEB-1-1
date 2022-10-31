@@ -12,17 +12,17 @@ public class Main {
 
         server.addHandler("GET", "/messages", new Handler() {
             public void handle(Request request, BufferedOutputStream responseStream) {
-                // TODO: handlers code
+                // TODO: нужно переписать метод
             }
         });
         server.addHandler("POST", "/messages", new Handler() {
             public void handle(Request request, BufferedOutputStream responseStream) {
-                // TODO: handlers code
+                // TODO: нужно переписать метод
             }
         });
 
         server.addHandler("GET", "/", ((request, responseStream) -> {
-//
+        // TODO: нужно переписать метод
         }));
 
     }

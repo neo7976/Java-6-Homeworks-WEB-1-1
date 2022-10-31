@@ -38,7 +38,7 @@ public class MonoThreadClientHandler implements Runnable {
                 }
 
                 Request request = new Request(parts[0], parts[1]);
-                if (request.getMethod() == null || handlers.contains(request.getMethod())) {
+                if (request.getMethod() == null || !handlers.containsKey(request.getMethod())) {
                     responseLack(out, "404", "Request Not Found");
 //                    continue;
                 }

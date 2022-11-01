@@ -32,7 +32,7 @@ public class Server {
     public void start() {
         Random random = new Random();
         System.out.println("Запускаем сервер на порту " + PORT);
-        System.out.printf("Открой в браузере http://localhost:%d%s\n", PORT, validPaths.get(random.nextInt(validPaths.size()-1)));
+        System.out.printf("Открой в браузере http://localhost:%d%s\n", PORT, validPaths.get(random.nextInt(validPaths.size() - 1)));
         while (true) {
             try {
                 Socket socket = serverSocket.accept();
@@ -40,17 +40,14 @@ public class Server {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-//            } finally {
-//                executorService.shutdown();
-//            }
         }
     }
 
-    public void addHandler(String method, String msg, Handler handler) {
-        if (!handlers.containsKey(method))
-            handlers.put(method, new HashMap<>());
-        handlers.get(msg).put(msg, handler);
+        public void addHandler (String method, String msg, Handler handler){
+            if (!handlers.containsKey(method))
+                handlers.put(method, new ConcurrentHashMap<>());
+            handlers.get(method).put(msg, handler);
+        }
     }
-}
 
 

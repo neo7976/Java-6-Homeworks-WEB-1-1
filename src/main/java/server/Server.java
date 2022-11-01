@@ -30,9 +30,10 @@ public class Server {
     }
 
     public void start() {
-        Random random = new Random();
         System.out.println("Запускаем сервер на порту " + PORT);
-        System.out.printf("Открой в браузере http://localhost:%d%s\n", PORT, validPaths.get(random.nextInt(validPaths.size() - 1)));
+        for (int i = 0; i < validPaths.size(); i++) {
+            System.out.printf("Открой в браузере http://localhost:%d%s\n", PORT, validPaths.get(i));
+        }
         while (true) {
             try {
                 Socket socket = serverSocket.accept();

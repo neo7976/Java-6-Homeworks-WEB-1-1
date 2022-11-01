@@ -26,17 +26,22 @@ public class Main {
                 }
             }
         });
-        server.addHandler("POST", "/messages", new Handler() {
-            public void handle(Request request, BufferedOutputStream responseStream) {
-                // TODO: нужно переписать метод
+
+        server.addHandler("POST", "/messages", ((request, responseStream) -> {
+            var message = "Hello! POST!";
+            try {
+                responseStream.write((
+                        "HTTP/1.1 200 OK\r\n" +
+                                "Content-Type: " + "text/plain" + "\r\n" +
+                                "Content-Length: " + message.length() + "\r\n" +
+                                "Connection: close\r\n" +
+                                "\r\n"
+                ).getBytes());
+                responseStream.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
-
-        server.addHandler("GET", "/", ((request, responseStream) -> {
-        // TODO: нужно переписать метод
         }));
-
-
         server.start();
     }
 }

@@ -41,7 +41,8 @@ public class Request {
         return path;
     }
 
-    public List<String> getQueryParam(String name) {
+    //todo разобраться, что нужно возвращать и как, скорее всего конкретный NameValuePair
+    public NameValuePair getQueryParam(String name) {
         //todo дописать реализацию
         return null;
     }
@@ -53,51 +54,51 @@ public class Request {
     public static Request requestBuild(BufferedInputStream in) throws IOException, URISyntaxException {
         final var allowedMethods = List.of(GET, POST);
 
-            final var limit = 4096;
-            in.mark(limit);
-            final var buffer = new byte[limit];
-            final var read = in.read(buffer);
+        final var limit = 4096;
+        in.mark(limit);
+        final var buffer = new byte[limit];
+        final var read = in.read(buffer);
 
-            //ищем запрос
-            final var requestLineDelimiter = new byte[]{'\r', '\n'};
-            final var requestLineEnd = indexOf(buffer, requestLineDelimiter, 0, read);
-            if (requestLineEnd == -1) {
-                return null;
-            }
+        //ищем запрос
+        final var requestLineDelimiter = new byte[]{'\r', '\n'};
+        final var requestLineEnd = indexOf(buffer, requestLineDelimiter, 0, read);
+        if (requestLineEnd == -1) {
+            return null;
+        }
 
-            final var requestLine = new String(Arrays.copyOf(buffer, requestLineEnd)).split(" ");
-            if (requestLine.length != 3)
-                return null;
+        final var requestLine = new String(Arrays.copyOf(buffer, requestLineEnd)).split(" ");
+        if (requestLine.length != 3)
+            return null;
 
-            final var method = requestLine[0];
-            if (!allowedMethods.contains(method))
-                return null;
+        final var method = requestLine[0];
+        if (!allowedMethods.contains(method))
+            return null;
 
-            final var path = requestLine[1];
-            if (!path.startsWith("/"))
-                return null;
+        final var path = requestLine[1];
+        if (!path.startsWith("/"))
+            return null;
 
-            // ищем заголовки
-            final var headersDelimiter = new byte[]{'\r', '\n', '\r', '\n'};
-            final var headersStart = requestLineEnd + requestLineDelimiter.length;
-            final var headersEnd = indexOf(buffer, headersDelimiter, headersStart, read);
-            if (headersEnd == -1) {
-                return null;
-            }
+        // ищем заголовки
+        final var headersDelimiter = new byte[]{'\r', '\n', '\r', '\n'};
+        final var headersStart = requestLineEnd + requestLineDelimiter.length;
+        final var headersEnd = indexOf(buffer, headersDelimiter, headersStart, read);
+        if (headersEnd == -1) {
+            return null;
+        }
 
-            // отматываем на начало буфера
-            in.reset();
-            // пропускаем requestLine
-            in.skip(headersStart);
+        // отматываем на начало буфера
+        in.reset();
+        // пропускаем requestLine
+        in.skip(headersStart);
 
-            //заполняем headers
-            final var headersBytes = in.readNBytes(headersEnd - headersStart);
-            List<String> headers = Arrays.asList(new String(headersBytes).split("\r\n"));
+        //заполняем headers
+        final var headersBytes = in.readNBytes(headersEnd - headersStart);
+        List<String> headers = Arrays.asList(new String(headersBytes).split("\r\n"));
 
-            // todo Прочитать <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
-            List<NameValuePair> body = URLEncodedUtils.parse(new URI(path), StandardCharsets.UTF_8);
+        // todo Прочитать <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+        List<NameValuePair> body = URLEncodedUtils.parse(new URI(path), StandardCharsets.UTF_8);
 
-            return new Request(method, path, headers, body);
+        return new Request(method, path, headers, body);
     }
 
 

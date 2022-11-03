@@ -1,5 +1,7 @@
 package request;
 
+import java.util.List;
+
 public class Request {
     private String method;
     private String path;
@@ -17,9 +19,15 @@ public class Request {
         return path;
     }
 
-//    public String setMethod(String method) {
-//        if (method != null && method.isBlank())
-//            return method;
-//        return null;
-//    }
+    public List<String> getQueryParam(String name) {
+        //todo дописать реализацию
+        return null;
+    }
+
+    public List<String> getQueryParams() {
+        //todo дописать реализацию
+        return null;
+    }
+
+
 }

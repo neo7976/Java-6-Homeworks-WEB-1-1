@@ -23,10 +23,10 @@ public class MonoThreadClientHandler implements Runnable {
 
     @Override
     public void run() {
-            try {
+            try (
 //                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 BufferedInputStream in = new BufferedInputStream(socket.getInputStream());
-                BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream());
+                BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream())){
 //                String requestLine = in.readLine();
 //                String[] parts = requestLine.split(" ");
 
@@ -39,10 +39,13 @@ public class MonoThreadClientHandler implements Runnable {
                 //todo Переписать под новый запрос
 //                Request request = new Request(parts[0], parts[1]);
                 Request request = Request.requestBuild(in);
-                if (request.getMethod() == null || !handlers.containsKey(request.getMethod())) {
+                if (request == null || !handlers.containsKey(request.getMethod())) {
                     responseLack(out, "404", "Request Not Found");
 //                    continue;
+                    return;
                 }
+                else
+                    printRequestDebug(request);
 
                 Map<String, Handler> handlerMap = handlers.get(request.getMethod());
                 String requestPath = request.getPath();
@@ -103,5 +106,11 @@ public class MonoThreadClientHandler implements Runnable {
                         "\r\n"
         ).getBytes());
         out.flush();
+    }
+
+    private void printRequestDebug(Request request) {
+        System.out.println("Request debug information: ");
+        System.out.println("METHOD: " + request.getMethod());
+        System.out.println("PATH: " + request.getPath());
     }
 }

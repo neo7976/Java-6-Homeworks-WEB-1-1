@@ -67,7 +67,7 @@ public class Request {
             }
 
             final var requestLine = new String(Arrays.copyOf(buffer, requestLineEnd)).split(" ");
-            if (requestLineEnd != 3)
+            if (requestLine.length != 3)
                 return null;
 
             final var method = requestLine[0];

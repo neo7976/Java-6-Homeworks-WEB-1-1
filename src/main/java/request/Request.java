@@ -18,7 +18,7 @@ public class Request {
     private String path;
     public List<String> headers;
     //todo переименовать <...> и название переменной списка
-    public List<NameValuePair> body;
+    public List<NameValuePair> params;
 
 
     public Request(String method, String path) {
@@ -26,11 +26,11 @@ public class Request {
         this.path = path;
     }
 
-    public Request(String method, String path, List<String> headers, List<NameValuePair> body) {
+    public Request(String method, String path, List<String> headers, List<NameValuePair> params) {
         this.method = method;
         this.path = path;
         this.headers = headers;
-        this.body = body;
+        this.params = params;
     }
 
     public String getMethod() {
@@ -46,9 +46,8 @@ public class Request {
         return null;
     }
 
-    public List<String> getQueryParams() {
-        //todo дописать реализацию
-        return null;
+    public List<NameValuePair> getQueryParams() {
+        return params;
     }
 
     public static Request requestBuild(BufferedInputStream in) throws IOException, URISyntaxException {
@@ -119,9 +118,6 @@ public class Request {
         return headers;
     }
 
-    public List<NameValuePair> getBody() {
-        return body;
-    }
     //    private static void badRequest(BufferedOutputStream out) throws IOException {
 //        out.write((
 //                "HTTP/1.1 400 Bad Request\r\n" +

@@ -74,7 +74,6 @@ public class Request {
             if (!allowedMethods.contains(method))
                 return null;
 
-            //todo если что, проверить это место
             final var path = requestLine[1];
             if (!path.startsWith("/"))
                 return null;
@@ -113,6 +112,10 @@ public class Request {
             return i;
         }
         return -1;
+    }
+
+    public List<String> getHeaders() {
+        return headers;
     }
 
 //    private static void badRequest(BufferedOutputStream out) throws IOException {

@@ -3,11 +3,9 @@ package server;
 import handler.Handler;
 import request.Request;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.Socket;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -26,19 +24,21 @@ public class MonoThreadClientHandler implements Runnable {
     @Override
     public void run() {
             try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                BufferedInputStream in = new BufferedInputStream(socket.getInputStream());
                 BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream());
-                String requestLine = in.readLine();
-                String[] parts = requestLine.split(" ");
+//                String requestLine = in.readLine();
+//                String[] parts = requestLine.split(" ");
 
-                if (parts.length != 3) {
-                    // just close socket
-                    socket.close();
-//                    continue;
-                }
+//                if (parts.length != 3) {
+//                    // just close socket
+//                    socket.close();
+////                    continue;
+//                }
 
                 //todo Переписать под новый запрос
-                Request request = new Request(parts[0], parts[1]);
+//                Request request = new Request(parts[0], parts[1]);
+                Request request = Request.requestBuild(in);
                 if (request.getMethod() == null || !handlers.containsKey(request.getMethod())) {
                     responseLack(out, "404", "Request Not Found");
 //                    continue;
@@ -89,7 +89,7 @@ public class MonoThreadClientHandler implements Runnable {
                     }
                 }
 
-            } catch (IOException e) {
+            } catch (IOException | URISyntaxException e) {
                 e.printStackTrace();
             }
         }

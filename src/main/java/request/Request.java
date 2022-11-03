@@ -51,7 +51,7 @@ public class Request {
         return null;
     }
 
-    public Request requestBuild(BufferedInputStream in) throws IOException, URISyntaxException {
+    public static Request requestBuild(BufferedInputStream in) throws IOException, URISyntaxException {
         final var allowedMethods = List.of(GET, POST);
 
             final var limit = 4096;

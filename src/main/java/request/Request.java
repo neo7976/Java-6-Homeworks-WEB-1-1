@@ -91,6 +91,7 @@ public class Request {
             // пропускаем requestLine
             in.skip(headersStart);
 
+            //заполняем headers
             final var headersBytes = in.readNBytes(headersEnd - headersStart);
             List<String> headers = Arrays.asList(new String(headersBytes).split("\r\n"));
 
@@ -118,7 +119,10 @@ public class Request {
         return headers;
     }
 
-//    private static void badRequest(BufferedOutputStream out) throws IOException {
+    public List<NameValuePair> getBody() {
+        return body;
+    }
+    //    private static void badRequest(BufferedOutputStream out) throws IOException {
 //        out.write((
 //                "HTTP/1.1 400 Bad Request\r\n" +
 //                        "Content-Length: 0\r\n" +

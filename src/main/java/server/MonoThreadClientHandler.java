@@ -101,7 +101,11 @@ public class MonoThreadClientHandler implements Runnable {
         System.out.println("Request debug information: ");
         System.out.println("METHOD: " + request.getMethod());
         System.out.println("PATH: " + request.getPath());
-        System.out.println("HEADERS: " + request.getHeaders());
+        System.out.println("---HEADERS:---Начало---");
+        for (String header : request.getHeaders()) {
+            System.out.println(header);
+        }
+        System.out.println("---HEADERS:---Конец---");
         System.out.println("BODY: " + request.getQueryParams());
         System.out.println("BODY Test: " + request.getQueryParam("test").getName());
     }

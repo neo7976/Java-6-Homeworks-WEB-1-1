@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Request {
     public static final String GET = "GET";
@@ -17,7 +18,6 @@ public class Request {
     private String method;
     private String path;
     public List<String> headers;
-    //todo переименовать <...> и название переменной списка
     public List<NameValuePair> params;
 
 
@@ -43,8 +43,19 @@ public class Request {
 
     //todo разобраться, что нужно возвращать и как, скорее всего конкретный NameValuePair
     public NameValuePair getQueryParam(String name) {
-        //todo дописать реализацию
-        return null;
+        return getQueryParams().stream()
+                .filter(x->x.getName().equalsIgnoreCase(name))
+                .findFirst().orElse(new NameValuePair() {
+                    @Override
+                    public String getName() {
+                        return name;
+                    }
+
+                    @Override
+                    public String getValue() {
+                        return "";
+                    }
+                });
     }
 
     public List<NameValuePair> getQueryParams() {
@@ -95,9 +106,7 @@ public class Request {
         final var headersBytes = in.readNBytes(headersEnd - headersStart);
         List<String> headers = Arrays.asList(new String(headersBytes).split("\r\n"));
 
-        // todo Прочитать <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
         List<NameValuePair> body = URLEncodedUtils.parse(new URI(path), StandardCharsets.UTF_8);
-
         return new Request(method, path, headers, body);
     }
 
@@ -128,6 +137,4 @@ public class Request {
 //        ).getBytes());
 //        out.flush();
 //    }
-
-
 }

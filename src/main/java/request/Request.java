@@ -11,7 +11,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Request {
     public static final String GET = "GET";
@@ -19,7 +18,7 @@ public class Request {
     private String method;
     private String path;
     public List<String> headers;
-    public List<NameValuePair> params;
+    public List<NameValuePair> queryParams;
 
 
     public Request(String method, String path) {
@@ -27,11 +26,11 @@ public class Request {
         this.path = path;
     }
 
-    public Request(String method, String path, List<String> headers, List<NameValuePair> params) {
+    public Request(String method, String path, List<String> headers, List<NameValuePair> queryParams) {
         this.method = method;
         this.path = path;
         this.headers = headers;
-        this.params = params;
+        this.queryParams = queryParams;
     }
 
     public String getMethod() {
@@ -49,7 +48,7 @@ public class Request {
     }
 
     public List<NameValuePair> getQueryParams() {
-        return params;
+        return queryParams;
     }
 
     public static Request requestBuild(BufferedInputStream in) throws IOException, URISyntaxException {
@@ -96,8 +95,8 @@ public class Request {
         final var headersBytes = in.readNBytes(headersEnd - headersStart);
         List<String> headers = Arrays.asList(new String(headersBytes).split("\r\n"));
 
-        List<NameValuePair> body = URLEncodedUtils.parse(new URI(path), StandardCharsets.UTF_8);
-        return new Request(method, path, headers, body);
+        List<NameValuePair> queryParams = URLEncodedUtils.parse(new URI(path), StandardCharsets.UTF_8);
+        return new Request(method, path, headers, queryParams);
     }
 
 

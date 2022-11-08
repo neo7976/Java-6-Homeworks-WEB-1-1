@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Request {
@@ -41,21 +42,10 @@ public class Request {
         return path;
     }
 
-    //todo разобраться, что нужно возвращать и как, скорее всего конкретный NameValuePair
-    public NameValuePair getQueryParam(String name) {
+    public List <NameValuePair> getQueryParam(String name) {
         return getQueryParams().stream()
                 .filter(x->x.getName().equalsIgnoreCase(name))
-                .findFirst().orElse(new NameValuePair() {
-                    @Override
-                    public String getName() {
-                        return name;
-                    }
-
-                    @Override
-                    public String getValue() {
-                        return "";
-                    }
-                });
+                .collect(Collectors.toList());
     }
 
     public List<NameValuePair> getQueryParams() {

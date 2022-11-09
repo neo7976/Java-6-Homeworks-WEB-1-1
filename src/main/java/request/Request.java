@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Request {
@@ -41,9 +42,9 @@ public class Request {
         return path;
     }
 
-    public List <NameValuePair> getQueryParam(String name) {
+    public List<NameValuePair> getQueryParam(String name) {
         return getQueryParams().stream()
-                .filter(x->x.getName().equalsIgnoreCase(name))
+                .filter(x -> x.getName().equalsIgnoreCase(name))
                 .collect(Collectors.toList());
     }
 
@@ -96,6 +97,22 @@ public class Request {
         List<String> headers = Arrays.asList(new String(headersBytes).split("\r\n"));
 
         List<NameValuePair> queryParams = URLEncodedUtils.parse(new URI(path), StandardCharsets.UTF_8);
+
+        if (!method.equals(GET)) {
+            in.skip(headersDelimiter.length);
+            // вычитываем Content-Length, чтобы прочитать body
+            final var contentLength = extractHeader(headers, "Content-Length");
+            if (contentLength.isPresent()) {
+                final var length = Integer.parseInt(contentLength.get());
+                final var bodyBytes = in.readNBytes(length);
+                final var body = new String(bodyBytes);
+
+                //todo выводим проверку для дальнейшего написания
+                System.out.println("ПРОВЕРЯЕМ ТЕЛО:" + body);
+            }
+        }
+
+
         return new Request(method, path, headers, queryParams);
     }
 
@@ -111,6 +128,14 @@ public class Request {
             return i;
         }
         return -1;
+    }
+
+    private static Optional<String> extractHeader(List<String> headers, String header) {
+        return headers.stream()
+                .filter(o -> o.startsWith(header))
+                .map(o -> o.substring(o.indexOf(" ")))
+                .map(String::trim)
+                .findFirst();
     }
 
     public List<String> getHeaders() {

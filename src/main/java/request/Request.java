@@ -1,5 +1,6 @@
 package request;
 
+import org.apache.commons.fileupload.FileUpload;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 
@@ -129,6 +130,10 @@ public class Request {
 //                    System.out.println("ПРОВЕРЯЕМ ТЕЛО:" + body);
                     //распарсили body
                     postParams = URLEncodedUtils.parse(new URI("?" + body), StandardCharsets.UTF_8);
+                }
+                if (contentTypeHeader.get().equals("multipart/form-data")) {
+                    //todo Написать реализацию
+//                    FileUpload fileUpload
                 }
             }
         }

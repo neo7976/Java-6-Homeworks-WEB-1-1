@@ -55,6 +55,14 @@ public class Request {
         return queryParams;
     }
 
+    public List<NameValuePair> getPostParams() {
+        return null;
+    }
+
+    public List<NameValuePair> getPostParam(String name) {
+        return null;
+    }
+
     public static Request requestBuild(BufferedInputStream in) throws IOException, URISyntaxException {
         final var allowedMethods = List.of(GET, POST);
 
@@ -114,11 +122,11 @@ public class Request {
                     final var length = Integer.parseInt(contentLength.get());
                     final var bodyBytes = in.readNBytes(length);
                     final var body = new String(bodyBytes);
-                    //todo выводим проверку для дальнейшего написания
-                    System.out.println("ПРОВЕРЯЕМ ТЕЛО:" + body);
-                }
-                //todo нужно распарсить body
 
+//                    System.out.println("ПРОВЕРЯЕМ ТЕЛО:" + body);
+                    //распарсили body
+                    postParams = URLEncodedUtils.parse(new URI("?" + body), StandardCharsets.UTF_8);
+                }
             }
         }
 

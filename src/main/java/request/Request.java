@@ -56,11 +56,13 @@ public class Request {
     }
 
     public List<NameValuePair> getPostParams() {
-        return null;
+        return postParams;
     }
 
     public List<NameValuePair> getPostParam(String name) {
-        return null;
+        return postParams.stream().
+                filter(x->x.getName().equalsIgnoreCase(name))
+                .collect(Collectors.toList());
     }
 
     public static Request requestBuild(BufferedInputStream in) throws IOException, URISyntaxException {

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -18,8 +19,9 @@ public class Request {
     public static final String POST = "POST";
     private String method;
     private String path;
-    public List<String> headers;
-    public List<NameValuePair> queryParams;
+    private List<String> headers;
+    private List<NameValuePair> queryParams;
+    private List<NameValuePair> postParams;
 
 
     public Request(String method, String path) {
@@ -27,11 +29,12 @@ public class Request {
         this.path = path;
     }
 
-    public Request(String method, String path, List<String> headers, List<NameValuePair> queryParams) {
+    public Request(String method, String path, List<String> headers, List<NameValuePair> queryParams, List<NameValuePair> postParams) {
         this.method = method;
         this.path = path;
         this.headers = headers;
         this.queryParams = queryParams;
+        this.postParams = postParams;
     }
 
     public String getMethod() {
@@ -98,22 +101,29 @@ public class Request {
 
         List<NameValuePair> queryParams = URLEncodedUtils.parse(new URI(path), StandardCharsets.UTF_8);
 
-        if (!method.equals(GET)) {
-            in.skip(headersDelimiter.length);
-            // вычитываем Content-Length, чтобы прочитать body
-            final var contentLength = extractHeader(headers, "Content-Length");
-            if (contentLength.isPresent()) {
-                final var length = Integer.parseInt(contentLength.get());
-                final var bodyBytes = in.readNBytes(length);
-                final var body = new String(bodyBytes);
+        List<NameValuePair> postParams = new ArrayList<>();
 
-                //todo выводим проверку для дальнейшего написания
-                System.out.println("ПРОВЕРЯЕМ ТЕЛО:" + body);
+        final var contentTypeHeader = extractHeader(headers, "Content-Type");
+        if (!method.equals(GET)) {
+            if (contentTypeHeader.get().equals("application/x-www-form-urlencoded")) {
+                in.skip(headersDelimiter.length);
+                // вычитываем Content-Length, чтобы прочитать body
+                final var contentLength = extractHeader(headers, "Content-Length");
+
+                if (contentLength.isPresent()) {
+                    final var length = Integer.parseInt(contentLength.get());
+                    final var bodyBytes = in.readNBytes(length);
+                    final var body = new String(bodyBytes);
+                    //todo выводим проверку для дальнейшего написания
+                    System.out.println("ПРОВЕРЯЕМ ТЕЛО:" + body);
+                }
+                //todo нужно распарсить body
+
             }
         }
 
 
-        return new Request(method, path, headers, queryParams);
+        return new Request(method, path, headers, queryParams, postParams);
     }
 
 

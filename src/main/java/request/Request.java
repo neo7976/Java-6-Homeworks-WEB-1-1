@@ -61,7 +61,7 @@ public class Request {
 
     public List<NameValuePair> getPostParam(String name) {
         return postParams.stream().
-                filter(x->x.getName().equalsIgnoreCase(name))
+                filter(x -> x.getName().equalsIgnoreCase(name))
                 .collect(Collectors.toList());
     }
 
@@ -115,14 +115,15 @@ public class Request {
 
         final var contentTypeHeader = extractHeader(headers, "Content-Type");
         if (!method.equals(GET)) {
-            if (contentTypeHeader.get().equals("application/x-www-form-urlencoded")) {
-                in.skip(headersDelimiter.length);
-                // вычитываем Content-Length, чтобы прочитать body
-                final var contentLength = extractHeader(headers, "Content-Length");
+            in.skip(headersDelimiter.length);
 
-                if (contentLength.isPresent()) {
-                    final var length = Integer.parseInt(contentLength.get());
-                    final var bodyBytes = in.readNBytes(length);
+            // вычитываем Content-Length, чтобы прочитать body
+            final var contentLength = extractHeader(headers, "Content-Length");
+            if (contentLength.isPresent()) {
+                final var length = Integer.parseInt(contentLength.get());
+                final var bodyBytes = in.readNBytes(length);
+
+                if (contentTypeHeader.get().equals("application/x-www-form-urlencoded")) {
                     final var body = new String(bodyBytes);
 
 //                    System.out.println("ПРОВЕРЯЕМ ТЕЛО:" + body);
@@ -131,8 +132,6 @@ public class Request {
                 }
             }
         }
-
-
         return new Request(method, path, headers, queryParams, postParams);
     }
 
